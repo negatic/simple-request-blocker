@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+var (
+	startBlockTime = "00:00"
+	endBlockTime   = "17:00"
+)
+
 type Blocker struct {
 	Port              string
 	BlockEveryRequest bool
@@ -30,4 +35,28 @@ func Run() error {
 	startTime := flag.String("starttime", "10:00", "The time to start the blocking. Example: --starttime 10:00")
 	endTime := flag.String("endtime", "12:00", "The time to end the blocking. Example: --endtime 12:00")
 	flag.Parse()
+
+	list, err := parseList(*blockList)
+	if err != nil {
+		return err
+	}
+
+	if *startTime != "" {
+		startBlockTime = *startTime
+	}
+	if *endTime != "" {
+		endBlockTime = *endTime
+	}
+
+	st, err := parseTime(startBlockTime)
+	if err != nil {
+		return err
+	}
+	et, err := parseTime(endBlockTime)
+	if err != nil {
+		return err
+	}
+
+	blocker := NewBlocker(*port, *blockEveryRequest, list, st, et)
+
 }
