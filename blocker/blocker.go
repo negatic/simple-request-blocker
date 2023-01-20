@@ -2,6 +2,9 @@ package blocker
 
 import (
 	"flag"
+	"fmt"
+	"log"
+	"net/http"
 	"time"
 )
 
@@ -58,5 +61,12 @@ func Run() error {
 	}
 
 	blocker := NewBlocker(*port, *blockEveryRequest, list, st, et)
+	router := blocker.CreateRouter()
+
+	fmt.Printf("The proxy runs on port %s...", *port)
+	fmt.Printf("Following sites will be blocked: %s", blocker.UrlList)
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf("localhost:%s", blocker.Port), router))
+	return nil
 
 }
